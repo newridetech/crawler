@@ -9,18 +9,18 @@
 'use strict';
 
 const CrawlerManagerSession = require('./CrawlerManagerSession');
+const through2 = require('through2');
 
 class CrawlerManager {
-  onSessionEnd(callback) {
-    this.on('session.end', callback);
-  }
-
-  run(urlListDuplexStream) {
-    const session = new CrawlerManagerSession();
+  run(extractorToHostSet, urlListDuplexStream) {
+    const session = new CrawlerManagerSession(extractorToHostSet);
 
     urlListDuplexStream
-      .on('data', data => session.onUrlListDuplexStreamData(data))
-      .on('end', () => session.onUrlListDuplexStreamEnd())
+      .pipe(through2.obj(function (chunk, encoding, callback) {
+        session.onUrlListDuplexStreamData(this, chunk, callback);
+      }))
+      .on('data', data => console.log(data))
+      .on('end', () => session.onUrlListDuplexStreamEnd(urlListDuplexStream))
     ;
 
     return session;

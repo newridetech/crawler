@@ -13,8 +13,8 @@
 
 // const assert = require('chai').assert;
 const CrawlerManager = require('../CrawlerManager');
-// const ExampleMainTextContentExtractor = require('../Extractor/ExampleMainTextContent');
-// const ExtractorToHostSet = require('../ExtractorToHostSet');
+const ExampleMainTextContentExtractor = require('../Extractor/ExampleMainTextContent');
+const ExtractorToHostSet = require('../ExtractorToHostSet');
 const httpServer = require('http-server');
 const MemoryUrlListDuplexStream = require('../UrlListDuplexStream/Memory');
 const path = require('path');
@@ -34,28 +34,23 @@ describe('CrawlerManager', function () {
     server.listen(done);
   });
 
-  it.skip('should crawl given links', function (done) {
+  it('should crawl given links', function (done) {
+    const extractorToHostSet = new ExtractorToHostSet([
+      {
+        hostExtractor: new ExampleMainTextContentExtractor(),
+        hostPattern: /localhost:([0-9]+)\/index.html/,
+      }
+    ]);
     const urlListDuplexStream = new MemoryUrlListDuplexStream();
-    // const extractorToHostSet = new ExtractorToHostSet([
-    //   {
-    //     hostExtractor: new ExampleMainTextContentExtractor(),
-    //     hostPattern: /localhost:([0-9]+)\/index.html/,
-    //   }
-    // ]);
     const crawlerManager = new CrawlerManager();
 
     urlListDuplexStream.feed([
-      `http://localhost:${server.server.address().port}/bar`,
+      `http://localhost:${server.server.address().port}/index.html`,
     ]);
 
-    setTimeout(() => {
-      urlListDuplexStream.feed([
-        `http://localhost:${server.server.address().port}/foo`,
-      ]);
-    }, 600);
-
-    setTimeout(() => {
-      crawlerManager.run(urlListDuplexStream).onSessionEnd(done);
-    }, 400);
+    crawlerManager
+      .run(extractorToHostSet, urlListDuplexStream)
+      .addListenerSessionEnd(done)
+    ;
   });
 });

@@ -9,8 +9,23 @@
 'use strict';
 
 const Extractor = require('../Extractor');
+const Nightmare = require('nightmare');
 
 class ExampleMainTextContent extends Extractor {
+  extractFromUrl(stream, url) {
+    return Nightmare()
+      .goto(url)
+      .wait('#main')
+      .evaluate(function () {
+        return document.querySelector('#main').textContent;
+      })
+      .then(textContent => {
+        stream.push({
+          data: textContent,
+        });
+      })
+    ;
+  }
 }
 
 module.exports = ExampleMainTextContent;

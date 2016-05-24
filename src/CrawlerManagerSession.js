@@ -11,12 +11,23 @@
 const EventEmitter = require('events');
 
 class CrawlerManagerSession extends EventEmitter {
-  onUrlListDuplexStreamData(url) {
-    console.log('onUrlListDuplexStreamData', url);
+  constructor(extractorToHostSet) {
+    super();
+
+    this.extractorToHostSet = extractorToHostSet;
   }
 
-  onSessionEnd(callback) {
+  addListenerSessionEnd(callback) {
     this.on('session.end', callback);
+  }
+
+  onUrlListDuplexStreamData(stream, url, callback) {
+    return this.extractorToHostSet
+      .findExtractorForUrl(url)
+      .extractFromUrl(stream, url)
+      .catch(callback)
+      .then(() => callback())
+    ;
   }
 
   onUrlListDuplexStreamEnd() {

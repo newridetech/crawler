@@ -9,6 +9,13 @@
 'use strict';
 
 class ExtractorToHostSet extends Set {
+  findExtractorForUrl(url) {
+    for (let value of this.values()) {
+      if (value.hostPattern.test(url)) {
+        return value.hostExtractor;
+      }
+    }
+  }
 }
 
 module.exports = ExtractorToHostSet;
