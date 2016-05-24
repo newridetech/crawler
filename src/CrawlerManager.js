@@ -8,7 +8,23 @@
 
 'use strict';
 
+const CrawlerManagerSession = require('./CrawlerManagerSession');
+
 class CrawlerManager {
+  onSessionEnd(callback) {
+    this.on('session.end', callback);
+  }
+
+  run(urlListDuplexStream) {
+    const session = new CrawlerManagerSession();
+
+    urlListDuplexStream
+      .on('data', data => session.onUrlListDuplexStreamData(data))
+      .on('end', () => session.onUrlListDuplexStreamEnd())
+    ;
+
+    return session;
+  }
 }
 
 module.exports = CrawlerManager;

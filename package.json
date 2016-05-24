@@ -4,7 +4,12 @@
   "private": true,
   "scripts": {},
   "dependencies": {
-    "nightmare": "^2.4.1"
+    "bluebird": "^3.4.0",
+    "lodash": "^4.13.1",
+    "mobx": "^2.1.7",
+    "nightmare": "^2.4.1",
+    "through2": "^2.0.1",
+    "urijs": "^1.18.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
