@@ -19,6 +19,7 @@ class ExtractorSession extends Promise {
     });
 
     this.done = thisResolve.bind(this);
+    this.extractor = extractor;
     this.fail = thisReject.bind(this);
     this.url = url;
   }
@@ -28,6 +29,10 @@ class ExtractorSession extends Promise {
   }
 
   start() {
+    return this.extractor.extractFromUrl(this.url)
+      .then(this.done)
+      .catch(this.fail)
+    ;
   }
 }
 

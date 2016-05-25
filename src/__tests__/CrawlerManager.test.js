@@ -35,6 +35,8 @@ describe('CrawlerManager', function () {
   });
 
   it('should crawl given links', function (done) {
+    this.timeout(10000);
+
     const extractorScheduler = new ExtractorScheduler();
     const extractorToHostSet = new ExtractorToHostSet([
       {

@@ -8,19 +8,48 @@
 
 'use strict';
 
-class ExtractorScheduler {
+const EventEmitter = require('events');
+
+class ExtractorScheduler extends EventEmitter {
   constructor() {
+    super();
+
+    this.handleExtractorSessionFinish = this.handleExtractorSessionFinish.bind(this);
+    this.scheduledExtractorSessionSet = new Set();
   }
 
-  addListenerDrainOnce(callback) {
-    // callback();
+  addListenerHasCapacityOnce(callback) {
+    this.once('capacity', callback);
+    this.notifyOnceIfHasCapacity();
+  }
+
+  checkHasCapacity() {
+    return Promise.resolve(this.scheduledExtractorSessionSet.size < 1);
   }
 
   flush() {
+    console.log('extractor scheduler flush', this.scheduledExtractorSessionSet);
+  }
+
+  handleExtractorSessionFinish(extractorSession) {
+    this.scheduledExtractorSessionSet.delete(extractorSession);
+
+    return this.notifyOnceIfHasCapacity();
+  }
+
+  notifyOnceIfHasCapacity() {
+    this.checkHasCapacity().then(hasCapacity => {
+      if (hasCapacity) {
+        this.emit('capacity');
+      }
+
+      return hasCapacity;
+    });
   }
 
   schedule(extractorSession) {
-    console.log(extractorSession);
+    this.scheduledExtractorSessionSet.add(extractorSession);
+    extractorSession.start();
   }
 }
 

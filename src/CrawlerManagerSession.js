@@ -47,16 +47,21 @@ class CrawlerManagerSession extends EventEmitter {
     for (const extractor of extractorList) {
       const extractorSession = new ExtractorSession(extractor, url);
 
-      extractorSession.catch(this.extractorScheduler.flush);
-      extractorSession.then(this.extractorScheduler.flush);
+      extractorSession.catch(() => {
+        this.extractorScheduler.handleExtractorSessionFinish(extractorSession);
+      });
+      extractorSession.then(() => {
+        this.extractorScheduler.handleExtractorSessionFinish(extractorSession);
+      });
       this.extractorScheduler.schedule(extractorSession);
     }
 
-    this.extractorScheduler.addListenerDrainOnce(callback);
+    this.extractorScheduler.addListenerHasCapacityOnce(callback);
   }
 
   onUrlListDuplexStreamEnd() {
     this.emit('session.end');
+    this.extractorScheduler.flush();
   }
 }
 
