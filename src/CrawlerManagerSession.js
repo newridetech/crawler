@@ -43,12 +43,10 @@ class CrawlerManagerSession extends EventEmitter {
 
   onUrlListDuplexStreamData(stream, url, callback) {
     const extractorList = this.extractorToHostSet.findExtractorListForUrl(url);
-    const extractorSessionList = [];
 
     for (const extractor of extractorList) {
       const extractorSession = new ExtractorSession(extractor, url);
 
-      extractorSessionList.push(extractorSession);
       extractorSession.catch(this.extractorScheduler.flush);
       extractorSession.then(this.extractorScheduler.flush);
       this.extractorScheduler.schedule(extractorSession);
