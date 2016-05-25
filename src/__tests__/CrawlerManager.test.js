@@ -46,7 +46,10 @@ describe('CrawlerManager', function () {
     const crawlerManager = new CrawlerManager(extractorScheduler, extractorToHostSet);
 
     urlListDuplexStream.feed([
-      `http://localhost:${server.server.address().port}/index.html`,
+      `http://localhost:${server.server.address().port}/index.html?p=0`,
+      `http://localhost:${server.server.address().port}/index.html?p=1`,
+      `http://localhost:${server.server.address().port}/index.html?p=2`,
+      `http://localhost:${server.server.address().port}/index.html?p=3`,
     ]);
 
     crawlerManager

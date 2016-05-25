@@ -54,10 +54,7 @@ class CrawlerManagerSession extends EventEmitter {
       this.extractorScheduler.schedule(extractorSession);
     }
 
-    return Promise.all(extractorSessionList)
-      .catch(callback)
-      .then(() => callback())
-    ;
+    this.extractorScheduler.addListenerDrainOnce(callback);
   }
 
   onUrlListDuplexStreamEnd() {

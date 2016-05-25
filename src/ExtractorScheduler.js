@@ -12,6 +12,10 @@ class ExtractorScheduler {
   constructor() {
   }
 
+  addListenerDrainOnce(callback) {
+    // callback();
+  }
+
   flush() {
   }
 
