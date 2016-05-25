@@ -16,7 +16,7 @@ const ExampleMainTextContentExtractor = require('../Extractor/ExampleMainTextCon
 const ExtractorScheduler = require('../ExtractorScheduler');
 const ExtractorToHostSet = require('../ExtractorToHostSet');
 const httpServer = require('http-server');
-const MemoryUrlListDuplexStream = require('../UrlListDuplexStream/Memory');
+const UrlListDuplexStream = require('../UrlListDuplexStream');
 const path = require('path');
 
 describe('CrawlerManager', function () {
@@ -42,7 +42,7 @@ describe('CrawlerManager', function () {
         hostPattern: /localhost:([0-9]+)\/index.html/,
       },
     ]);
-    const urlListDuplexStream = new MemoryUrlListDuplexStream();
+    const urlListDuplexStream = new UrlListDuplexStream();
     const crawlerManager = new CrawlerManager(extractorScheduler, extractorToHostSet);
 
     urlListDuplexStream.feed([

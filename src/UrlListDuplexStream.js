@@ -9,6 +9,8 @@
 'use strict';
 
 const Duplex = require('stream').Duplex;
+const isEmpty = require('lodash/isEmpty');
+const mobx = require('mobx');
 const Promise = require('bluebird');
 
 class UrlListDuplexStream extends Duplex {
@@ -17,6 +19,8 @@ class UrlListDuplexStream extends Duplex {
       readableObjectMode: true,
       writableObjectMode: true,
     });
+
+    this.buffer = mobx.observable([]);
   }
 
   end() {
@@ -27,6 +31,43 @@ class UrlListDuplexStream extends Duplex {
     return Promise.all(urlList.map(url => (
       Promise.fromCallback(cb => this.write(url, cb))
     )));
+  }
+
+  flush(size) {
+    let pushed = 0;
+
+    for (; pushed < size && !isEmpty(this.buffer); pushed += 1) {
+      if (!this.push(this.buffer.shift())) {
+        return false;
+      }
+    }
+
+    return pushed;
+  }
+
+  _read(size) {
+    let pushed = this.flush(size);
+
+    if (pushed === false) {
+      return;
+    }
+
+    let left = size - pushed;
+
+    const dispose = mobx.observe(this.buffer, change => {
+      if (change.addedCount) {
+        pushed = this.flush(left);
+        left -= pushed;
+        if (pushed === false || left <= 0) {
+          dispose();
+        }
+      }
+    });
+  }
+
+  _write(chunk, encoding, callback) {
+    this.buffer.push(chunk.toString('utf8'));
+    callback();
   }
 }
 

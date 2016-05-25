@@ -49,6 +49,8 @@ class CrawlerManagerSession extends EventEmitter {
       const extractorSession = new ExtractorSession(extractor, url);
 
       extractorSessionList.push(extractorSession);
+      extractorSession.catch(this.extractorScheduler.flush);
+      extractorSession.then(this.extractorScheduler.flush);
       this.extractorScheduler.schedule(extractorSession);
     }
 

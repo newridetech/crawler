@@ -9,6 +9,12 @@
 'use strict';
 
 class ExtractorScheduler {
+  constructor() {
+  }
+
+  flush() {
+  }
+
   schedule(extractorSession) {
     console.log(extractorSession);
   }

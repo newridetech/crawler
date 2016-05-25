@@ -11,11 +11,11 @@
 /* global after: false, before: false, describe: false, it: false */
 
 const assert = require('chai').assert;
-const MemoryUrlListDuplexStream = require('../../UrlListDuplexStream/Memory');
+const UrlListDuplexStream = require('../UrlListDuplexStream');
 
-describe('UrlListDuplexStream/Memory', function () {
+describe('UrlListDuplexStream', function () {
   it('should listen to the incoming data', function (done) {
-    const urlListDuplexStream = new MemoryUrlListDuplexStream();
+    const urlListDuplexStream = new UrlListDuplexStream();
     const dataList = [];
 
     urlListDuplexStream.write('hello');
