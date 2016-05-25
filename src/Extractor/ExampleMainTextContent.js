@@ -12,18 +12,18 @@ const Extractor = require('../Extractor');
 const Nightmare = require('nightmare');
 
 class ExampleMainTextContent extends Extractor {
-  extractFromUrl(stream, url) {
-    return Nightmare()
+  extractFromUrl(extractorSession, url) {
+    new Nightmare()
       .goto(url)
       .wait('#main')
       .evaluate(function () {
         return document.querySelector('#main').textContent;
       })
       .then(textContent => {
-        stream.push({
-          data: textContent,
-        });
+        extractorSession.pushData('main_text_content', { textContent });
       })
+      .then(extractorSession.done)
+      .catch(extractorSession.fail)
     ;
   }
 }

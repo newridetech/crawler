@@ -8,7 +8,6 @@
 
 'use strict';
 
-/* eslint new-cap: 0 */
 /* global after: false, before: false, describe: false, it: false */
 
 const assert = require('chai').assert;

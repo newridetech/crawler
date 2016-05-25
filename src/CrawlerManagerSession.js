@@ -8,13 +8,33 @@
 
 'use strict';
 
+const assert = require('chai').assert;
 const EventEmitter = require('events');
+const ExtractorScheduler = require('./ExtractorScheduler');
+const ExtractorSession = require('./ExtractorSession');
+const ExtractorToHostSet = require('./ExtractorToHostSet');
+const through2 = require('through2');
+const UrlListDuplexStream = require('./UrlListDuplexStream');
 
 class CrawlerManagerSession extends EventEmitter {
-  constructor(extractorToHostSet) {
+  constructor(extractorScheduler, extractorToHostSet, urlListDuplexStream) {
     super();
 
+    const session = this;
+
+    assert.instanceOf(extractorScheduler, ExtractorScheduler);
+    assert.instanceOf(extractorToHostSet, ExtractorToHostSet);
+    assert.instanceOf(urlListDuplexStream, UrlListDuplexStream);
+
+    this.extractorScheduler = extractorScheduler;
     this.extractorToHostSet = extractorToHostSet;
+    urlListDuplexStream
+      .pipe(through2.obj(function (url, encoding, callback) {
+        session.onUrlListDuplexStreamData(this, url, callback);
+      }))
+      .on('data', data => console.log(data))
+      .on('end', () => session.onUrlListDuplexStreamEnd())
+    ;
   }
 
   addListenerSessionEnd(callback) {
@@ -22,9 +42,17 @@ class CrawlerManagerSession extends EventEmitter {
   }
 
   onUrlListDuplexStreamData(stream, url, callback) {
-    return this.extractorToHostSet
-      .findExtractorForUrl(url)
-      .extractFromUrl(stream, url)
+    const extractorList = this.extractorToHostSet.findExtractorListForUrl(url);
+    const extractorSessionList = [];
+
+    for (const extractor of extractorList) {
+      const extractorSession = new ExtractorSession(extractor, url);
+
+      extractorSessionList.push(extractorSession);
+      this.extractorScheduler.schedule(extractorSession);
+    }
+
+    return Promise.all(extractorSessionList)
       .catch(callback)
       .then(() => callback())
     ;

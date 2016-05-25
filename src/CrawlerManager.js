@@ -8,22 +8,26 @@
 
 'use strict';
 
+const assert = require('chai').assert;
 const CrawlerManagerSession = require('./CrawlerManagerSession');
-const through2 = require('through2');
+const ExtractorScheduler = require('./ExtractorScheduler');
+const ExtractorToHostSet = require('./ExtractorToHostSet');
 
 class CrawlerManager {
-  run(extractorToHostSet, urlListDuplexStream) {
-    const session = new CrawlerManagerSession(extractorToHostSet);
+  constructor(extractorScheduler, extractorToHostSet) {
+    assert.instanceOf(extractorScheduler, ExtractorScheduler);
+    assert.instanceOf(extractorToHostSet, ExtractorToHostSet);
 
-    urlListDuplexStream
-      .pipe(through2.obj(function (chunk, encoding, callback) {
-        session.onUrlListDuplexStreamData(this, chunk, callback);
-      }))
-      .on('data', data => console.log(data))
-      .on('end', () => session.onUrlListDuplexStreamEnd(urlListDuplexStream))
-    ;
+    this.extractorScheduler = extractorScheduler;
+    this.extractorToHostSet = extractorToHostSet;
+  }
 
-    return session;
+  run(urlListDuplexStream) {
+    return new CrawlerManagerSession(
+      this.extractorScheduler,
+      this.extractorToHostSet,
+      urlListDuplexStream
+    );
   }
 }
 

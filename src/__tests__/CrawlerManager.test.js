@@ -8,12 +8,12 @@
 
 'use strict';
 
-/* eslint new-cap: 0 */
 /* global after: false, before: false, describe: false, it: false */
 
 // const assert = require('chai').assert;
 const CrawlerManager = require('../CrawlerManager');
 const ExampleMainTextContentExtractor = require('../Extractor/ExampleMainTextContent');
+const ExtractorScheduler = require('../ExtractorScheduler');
 const ExtractorToHostSet = require('../ExtractorToHostSet');
 const httpServer = require('http-server');
 const MemoryUrlListDuplexStream = require('../UrlListDuplexStream/Memory');
@@ -35,21 +35,22 @@ describe('CrawlerManager', function () {
   });
 
   it('should crawl given links', function (done) {
+    const extractorScheduler = new ExtractorScheduler();
     const extractorToHostSet = new ExtractorToHostSet([
       {
         hostExtractor: new ExampleMainTextContentExtractor(),
         hostPattern: /localhost:([0-9]+)\/index.html/,
-      }
+      },
     ]);
     const urlListDuplexStream = new MemoryUrlListDuplexStream();
-    const crawlerManager = new CrawlerManager();
+    const crawlerManager = new CrawlerManager(extractorScheduler, extractorToHostSet);
 
     urlListDuplexStream.feed([
       `http://localhost:${server.server.address().port}/index.html`,
     ]);
 
     crawlerManager
-      .run(extractorToHostSet, urlListDuplexStream)
+      .run(urlListDuplexStream)
       .addListenerSessionEnd(done)
     ;
   });
