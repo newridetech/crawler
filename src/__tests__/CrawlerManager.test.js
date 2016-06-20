@@ -10,7 +10,7 @@
 
 const CrawlerManager = require('../CrawlerManager');
 const ExampleMainTextContentExtractor = require('../Extractor/ExampleMainTextContent');
-const ExtractorScheduler = require('../ExtractorScheduler');
+const ExtractorScheduler = require('../EventEmitter/ExtractorScheduler');
 const ExtractorToHostSet = require('../ExtractorToHostSet');
 const httpServer = require('http-server');
 const UrlListDuplexStream = require('../UrlListDuplexStream');

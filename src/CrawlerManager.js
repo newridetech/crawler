@@ -10,7 +10,7 @@
 
 const assert = require('chai').assert;
 const CrawlerManagerSession = require('./Task/CrawlerManagerSession');
-const ExtractorScheduler = require('./ExtractorScheduler');
+const ExtractorScheduler = require('./EventEmitter/ExtractorScheduler');
 const ExtractorToHostSet = require('./ExtractorToHostSet');
 
 class CrawlerManager {

@@ -9,7 +9,7 @@
 'use strict';
 
 const assert = require('chai').assert;
-const ExtractorScheduler = require('../ExtractorScheduler');
+const ExtractorScheduler = require('../EventEmitter/ExtractorScheduler');
 const ExtractorSession = require('./ExtractorSession');
 const ExtractorToHostSet = require('../ExtractorToHostSet');
 const Task = require('../Task');
