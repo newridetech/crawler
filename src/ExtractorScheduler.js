@@ -10,46 +10,59 @@
 
 const EventEmitter = require('events');
 
+const CAPACITY_LIMIT = 1;
+
 class ExtractorScheduler extends EventEmitter {
   constructor() {
     super();
 
-    this.handleExtractorSessionFinish = this.handleExtractorSessionFinish.bind(this);
+    this.runningExtractorSessionSet = new Set();
     this.scheduledExtractorSessionSet = new Set();
   }
 
   addListenerHasCapacityOnce(callback) {
     this.once('capacity', callback);
-    this.notifyOnceIfHasCapacity();
   }
 
-  checkHasCapacity() {
-    return Promise.resolve(this.scheduledExtractorSessionSet.size < 1);
+  checkCanRunExtractor() {
+    return Promise.resolve(this.runningExtractorSessionSet.size < CAPACITY_LIMIT);
   }
 
   flush() {
-    console.log('extractor scheduler flush', this.scheduledExtractorSessionSet);
-  }
-
-  handleExtractorSessionFinish(extractorSession) {
-    this.scheduledExtractorSessionSet.delete(extractorSession);
-
-    return this.notifyOnceIfHasCapacity();
-  }
-
-  notifyOnceIfHasCapacity() {
-    this.checkHasCapacity().then(hasCapacity => {
-      if (hasCapacity) {
-        this.emit('capacity');
+    return this.checkCanRunExtractor().then(canRunExtractor => {
+      if (!canRunExtractor) {
+        return null;
       }
 
-      return hasCapacity;
+      for (const [scheduledExtractorSession] of this.scheduledExtractorSessionSet.entries()) {
+        this.scheduledExtractorSessionSet.delete(scheduledExtractorSession);
+        this.runningExtractorSessionSet.add(scheduledExtractorSession);
+
+        return scheduledExtractorSession.run().then(() => this.flush());
+      }
+
+      this.emit('capacity');
+
+      return null;
     });
   }
 
+  handleExtractorSessionError(extractorSession) {
+    return this.extractorScheduler.handleExtractorSessionFinish(extractorSession);
+  }
+
+  handleExtractorSessionFinish(extractorSession) {
+    this.runningExtractorSessionSet.delete(extractorSession);
+
+    return this.flush();
+  }
+
   schedule(extractorSession) {
+    extractorSession.catch(this.handleExtractorSessionError.bind(this, extractorSession));
+    extractorSession.then(this.handleExtractorSessionFinish.bind(this, extractorSession));
     this.scheduledExtractorSessionSet.add(extractorSession);
-    extractorSession.start();
+
+    return this.flush();
   }
 }
 

@@ -9,18 +9,16 @@
 'use strict';
 
 const assert = require('chai').assert;
-const EventEmitter = require('events');
-const ExtractorScheduler = require('./ExtractorScheduler');
+const ExtractorScheduler = require('../ExtractorScheduler');
 const ExtractorSession = require('./ExtractorSession');
-const ExtractorToHostSet = require('./ExtractorToHostSet');
+const ExtractorToHostSet = require('../ExtractorToHostSet');
+const Task = require('../Task');
 const through2 = require('through2');
-const UrlListDuplexStream = require('./UrlListDuplexStream');
+const UrlListDuplexStream = require('../UrlListDuplexStream');
 
-class CrawlerManagerSession extends EventEmitter {
+class CrawlerManagerSession extends Task {
   constructor(extractorScheduler, extractorToHostSet, urlListDuplexStream) {
     super();
-
-    const session = this;
 
     assert.instanceOf(extractorScheduler, ExtractorScheduler);
     assert.instanceOf(extractorToHostSet, ExtractorToHostSet);
@@ -28,39 +26,29 @@ class CrawlerManagerSession extends EventEmitter {
 
     this.extractorScheduler = extractorScheduler;
     this.extractorToHostSet = extractorToHostSet;
+
+    const session = this;
+
     urlListDuplexStream
       .pipe(through2.obj(function (url, encoding, callback) {
         session.onUrlListDuplexStreamData(this, url, callback);
       }))
       .on('data', data => console.log(data))
-      .on('end', () => session.onUrlListDuplexStreamEnd())
+      .on('end', this.resolve)
     ;
-  }
-
-  addListenerSessionEnd(callback) {
-    this.on('session.end', callback);
   }
 
   onUrlListDuplexStreamData(stream, url, callback) {
     const extractorList = this.extractorToHostSet.findExtractorListForUrl(url);
 
     for (const extractor of extractorList) {
-      const extractorSession = new ExtractorSession(extractor, url);
-
-      extractorSession.catch(() => {
-        this.extractorScheduler.handleExtractorSessionFinish(extractorSession);
-      });
-      extractorSession.then(() => {
-        this.extractorScheduler.handleExtractorSessionFinish(extractorSession);
-      });
-      this.extractorScheduler.schedule(extractorSession);
+      this.extractorScheduler.schedule(new ExtractorSession(extractor, url));
     }
 
     this.extractorScheduler.addListenerHasCapacityOnce(callback);
   }
 
   onUrlListDuplexStreamEnd() {
-    this.emit('session.end');
     this.extractorScheduler.flush();
   }
 }

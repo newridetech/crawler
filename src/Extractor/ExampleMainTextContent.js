@@ -16,9 +16,7 @@ class ExampleMainTextContent extends Extractor {
     return new Nightmare()
       .goto(url)
       .wait('#main')
-      .evaluate(function () {
-        return document.querySelector('#main').textContent;
-      })
+      .evaluate(() => document.querySelector('#main').textContent)
       .then(textContent => {
         console.log(textContent);
       })

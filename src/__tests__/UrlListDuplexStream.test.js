@@ -8,29 +8,25 @@
 
 'use strict';
 
-/* global after: false, before: false, describe: false, it: false */
-
-const assert = require('chai').assert;
+const test = require('lookly-preset-ava/test');
 const UrlListDuplexStream = require('../UrlListDuplexStream');
 
-describe('UrlListDuplexStream', function () {
-  it('should listen to the incoming data', function (done) {
-    const urlListDuplexStream = new UrlListDuplexStream();
-    const dataList = [];
+test.cb('should listen to the incoming data', t => {
+  const urlListDuplexStream = new UrlListDuplexStream();
+  const dataList = [];
 
-    urlListDuplexStream.write('hello');
+  urlListDuplexStream.write('hello');
 
-    urlListDuplexStream
-      .on('data', data => {
-        dataList.push(data);
-        if (dataList.length === 2) {
-          assert.deepEqual(dataList, ['hello', 'world']);
-          urlListDuplexStream.end();
-        }
-      })
-      .on('end', done)
-    ;
+  urlListDuplexStream
+    .on('data', data => {
+      dataList.push(data);
+      if (dataList.length === 2) {
+        t.deepEqual(dataList, ['hello', 'world']);
+        urlListDuplexStream.end();
+      }
+    })
+    .on('end', t.end)
+  ;
 
-    setTimeout(() => urlListDuplexStream.write('world'));
-  });
+  urlListDuplexStream.write('world');
 });

@@ -8,19 +8,19 @@
 
 'use strict';
 
-const eslint = require('space-preconfigured-eslint');
+const ava = require('lookly-preset-ava');
+const eslint = require('lookly-preset-eslint');
 const gulp = require('gulp');
-const mocha = require('space-preconfigured-mocha');
 
-gulp.task('lint', function () {
-  return eslint([
+gulp.task('lint', () => (
+  eslint([
     __filename,
     './src/**/*.js',
-  ]);
-});
+  ])
+));
 
-gulp.task('test', function () {
-  return mocha([
+gulp.task('test', ['lint'], () => (
+  ava([
     './src/__tests__/**/*.test.js',
-  ]);
-});
+  ])
+));

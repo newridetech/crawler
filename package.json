@@ -4,19 +4,19 @@
   "private": true,
   "scripts": {},
   "dependencies": {
-    "bluebird": "^3.4.0",
+    "bluebird": "^3.4.1",
+    "chai": "^3.5.0",
     "lodash": "^4.13.1",
-    "mobx": "^2.1.7",
-    "nightmare": "^2.4.1",
+    "mobx": "^2.3.2",
+    "nightmare": "^2.5.1",
     "through2": "^2.0.1",
-    "urijs": "^1.18.0"
+    "urijs": "^1.18.1"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
     "freeport": "^1.0.5",
     "gulp": "^3.9.1",
     "http-server": "^0.9.0",
-    "space-preconfigured-eslint": "^1.4.11",
-    "space-preconfigured-mocha": "^1.1.2"
+    "lookly-preset-ava": "^1.1.0",
+    "lookly-preset-eslint": "^1.6.1"
   }
 }

@@ -8,37 +8,31 @@
 
 'use strict';
 
-/* global after: false, before: false, describe: false, it: false */
-
-const assert = require('chai').assert;
 const Extractor = require('../Extractor');
 const ExtractorToHostSet = require('../ExtractorToHostSet');
+const test = require('lookly-preset-ava/test');
 
-describe('ExtractorToHostSet', function () {
-  describe('#findExtractorListForUrl', function () {
-    it('should match given urls', function () {
-      const extractor1 = new Extractor();
-      const extractor2 = new Extractor();
-      const extractor3 = new Extractor();
-      const extractors = new ExtractorToHostSet([
-        {
-          hostExtractor: extractor1,
-          hostPattern: /foo.example.com/,
-        },
-        {
-          hostExtractor: extractor2,
-          hostPattern: /bar.example.com/,
-        },
-        {
-          hostExtractor: extractor3,
-          hostPattern: /bar.example.com\/index.html/,
-        },
-      ]);
-      const foundExtractors = extractors.findExtractorListForUrl('bar.example.com/index.html');
+test('should match given urls', t => {
+  const extractor1 = new Extractor();
+  const extractor2 = new Extractor();
+  const extractor3 = new Extractor();
+  const extractors = new ExtractorToHostSet([
+    {
+      hostExtractor: extractor1,
+      hostPattern: /foo.example.com/,
+    },
+    {
+      hostExtractor: extractor2,
+      hostPattern: /bar.example.com/,
+    },
+    {
+      hostExtractor: extractor3,
+      hostPattern: /bar.example.com\/index.html/,
+    },
+  ]);
+  const foundExtractors = extractors.findExtractorListForUrl('bar.example.com/index.html');
 
-      assert.include(foundExtractors, extractor2);
-      assert.include(foundExtractors, extractor3);
-      assert.lengthOf(foundExtractors, 2);
-    });
-  });
+  t.true(foundExtractors.includes(extractor2));
+  t.true(foundExtractors.includes(extractor3));
+  t.is(foundExtractors.length, 2);
 });

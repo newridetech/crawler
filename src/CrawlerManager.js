@@ -9,7 +9,7 @@
 'use strict';
 
 const assert = require('chai').assert;
-const CrawlerManagerSession = require('./CrawlerManagerSession');
+const CrawlerManagerSession = require('./Task/CrawlerManagerSession');
 const ExtractorScheduler = require('./ExtractorScheduler');
 const ExtractorToHostSet = require('./ExtractorToHostSet');
 
