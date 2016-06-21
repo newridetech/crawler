@@ -12,14 +12,13 @@ const Extractor = require('../Extractor');
 const Nightmare = require('nightmare');
 
 class ExampleMainTextContent extends Extractor {
-  extractFromUrl(url) {
+  extractFromUrl(dataBus, url) {
     return new Nightmare()
       .goto(url)
       .wait('#main')
       .evaluate(() => document.querySelector('#main').textContent)
-      .then(textContent => {
-        console.log(textContent);
-      })
+      .end()
+      .then(textContent => dataBus.pushData('main', textContent))
     ;
   }
 }

@@ -8,21 +8,15 @@
 
 'use strict';
 
-const Task = require('../Task');
-
-class ExtractorSession extends Task {
-  constructor(extractor, url) {
-    super();
-
+class ExtractorSession {
+  constructor(dataBus, extractor, url) {
+    this.dataBus = dataBus;
     this.extractor = extractor;
     this.url = url;
   }
 
   run() {
-    return this.extractor.extractFromUrl(this.url)
-      .then(this.resolve)
-      .catch(this.reject)
-    ;
+    return Promise.resolve(this.extractor.extractFromUrl(this.dataBus, this.url));
   }
 }
 

@@ -20,10 +20,6 @@ class ExtractorScheduler extends EventEmitter {
     this.scheduledExtractorSessionSet = new Set();
   }
 
-  addListenerHasCapacityOnce(callback) {
-    this.once('capacity', callback);
-  }
-
   checkCanRunExtractor() {
     return Promise.resolve(this.runningExtractorSessionSet.size < CAPACITY_LIMIT);
   }
@@ -38,17 +34,28 @@ class ExtractorScheduler extends EventEmitter {
         this.scheduledExtractorSessionSet.delete(scheduledExtractorSession);
         this.runningExtractorSessionSet.add(scheduledExtractorSession);
 
-        return scheduledExtractorSession.run().then(() => this.flush());
+        return this.runExtractorSession(scheduledExtractorSession);
       }
 
-      this.emit('capacity');
-
-      return null;
+      return this.handleExtractorSchedulerCapacity();
     });
   }
 
-  handleExtractorSessionError(extractorSession) {
-    return this.extractorScheduler.handleExtractorSessionFinish(extractorSession);
+  handleExtractorSchedulerCapacity() {
+    this.emit(ExtractorScheduler.EVENT_CAPACITY);
+
+    if (this.runningExtractorSessionSet.size + this.scheduledExtractorSessionSet.size < 1) {
+      this.emit(ExtractorScheduler.EVENT_DEPLETED);
+    }
+  }
+
+  handleExtractorSessionError(extractorSession, err) {
+    return this.extractorScheduler
+      .handleExtractorSessionFinish(extractorSession)
+      .then(() => {
+        throw err;
+      })
+    ;
   }
 
   handleExtractorSessionFinish(extractorSession) {
@@ -57,13 +64,21 @@ class ExtractorScheduler extends EventEmitter {
     return this.flush();
   }
 
+  runExtractorSession(extractorSession) {
+    return extractorSession.run()
+      .catch(err => this.handleExtractorSessionError(extractorSession, err))
+      .then(() => this.handleExtractorSessionFinish(extractorSession))
+    ;
+  }
+
   schedule(extractorSession) {
-    extractorSession.catch(this.handleExtractorSessionError.bind(this, extractorSession));
-    extractorSession.then(this.handleExtractorSessionFinish.bind(this, extractorSession));
     this.scheduledExtractorSessionSet.add(extractorSession);
 
     return this.flush();
   }
 }
+
+ExtractorScheduler.EVENT_CAPACITY = Symbol();
+ExtractorScheduler.EVENT_DEPLETED = Symbol();
 
 module.exports = ExtractorScheduler;

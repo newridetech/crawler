@@ -9,25 +9,28 @@
 'use strict';
 
 const assert = require('chai').assert;
-const CrawlerManagerSession = require('./Task/CrawlerManagerSession');
+const CrawlerManagerSession = require('./CrawlerManagerSession');
+const DataBus = require('./EventEmitter/DataBus');
 const ExtractorScheduler = require('./EventEmitter/ExtractorScheduler');
 const ExtractorToHostSet = require('./ExtractorToHostSet');
 
 class CrawlerManager {
-  constructor(extractorScheduler, extractorToHostSet) {
+  constructor(dataBus, extractorScheduler, extractorToHostSet) {
+    assert.instanceOf(dataBus, DataBus);
     assert.instanceOf(extractorScheduler, ExtractorScheduler);
     assert.instanceOf(extractorToHostSet, ExtractorToHostSet);
 
+    this.dataBus = dataBus;
     this.extractorScheduler = extractorScheduler;
     this.extractorToHostSet = extractorToHostSet;
   }
 
   run(urlListDuplexStream) {
     return new CrawlerManagerSession(
+      this.dataBus,
       this.extractorScheduler,
-      this.extractorToHostSet,
-      urlListDuplexStream
-    );
+      this.extractorToHostSet
+    ).run(urlListDuplexStream);
   }
 }
 

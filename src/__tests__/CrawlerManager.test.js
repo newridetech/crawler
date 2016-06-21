@@ -9,6 +9,7 @@
 'use strict';
 
 const CrawlerManager = require('../CrawlerManager');
+const DataBus = require('../EventEmitter/DataBus');
 const ExampleMainTextContentExtractor = require('../Extractor/ExampleMainTextContent');
 const ExtractorScheduler = require('../EventEmitter/ExtractorScheduler');
 const ExtractorToHostSet = require('../ExtractorToHostSet');
@@ -31,7 +32,8 @@ test.before.cb(t => {
   server.listen(t.end);
 });
 
-test('should crawl given links', () => {
+test('should crawl given links', t => {
+  const dataBus = new DataBus();
   const extractorScheduler = new ExtractorScheduler();
   const extractorToHostSet = new ExtractorToHostSet([
     {
@@ -39,15 +41,21 @@ test('should crawl given links', () => {
       hostPattern: /localhost:([0-9]+)\/index.html/,
     },
   ]);
-  const urlListDuplexStream = new UrlListDuplexStream();
-  const crawlerManager = new CrawlerManager(extractorScheduler, extractorToHostSet);
-
-  urlListDuplexStream.feed([
+  const urlList = [
     `http://localhost:${server.server.address().port}/index.html?p=0`,
     `http://localhost:${server.server.address().port}/index.html?p=1`,
     `http://localhost:${server.server.address().port}/index.html?p=2`,
     `http://localhost:${server.server.address().port}/index.html?p=3`,
-  ]);
+  ];
+  const urlListDuplexStream = new UrlListDuplexStream();
+  const crawlerManager = new CrawlerManager(dataBus, extractorScheduler, extractorToHostSet);
+
+  t.plan(urlList.length);
+  dataBus.addListener('main', datagram => {
+    t.is(datagram.data, 'Hello!');
+    datagram.resolve();
+  });
+  urlListDuplexStream.feed(urlList);
 
   return crawlerManager.run(urlListDuplexStream);
 });
