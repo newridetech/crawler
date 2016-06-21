@@ -15,12 +15,14 @@ const gulp = require('gulp');
 gulp.task('lint', () => (
   eslint([
     __filename,
-    './src/**/*.js',
+    './*.js',
+    './EventEmitter/**/*.js',
+    './Extractor/**/*.js',
   ])
 ));
 
 gulp.task('test', ['lint'], () => (
   ava([
-    './src/__tests__/**/*.test.js',
+    './__tests__/**/*.test.js',
   ])
 ));
