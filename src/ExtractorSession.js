@@ -8,15 +8,25 @@
 
 'use strict';
 
+const assert = require('chai').assert;
+const DataBus = require('./EventEmitter/DataBus');
+const Extractor = require('./Extractor');
+const UrlListDuplexStream = require('./UrlListDuplexStream');
+
 class ExtractorSession {
-  constructor(dataBus, extractor, url) {
+  constructor(urlListDuplexStream, dataBus, extractor, url) {
+    assert.instanceOf(dataBus, DataBus);
+    assert.instanceOf(extractor, Extractor);
+    assert.instanceOf(urlListDuplexStream, UrlListDuplexStream);
+
     this.dataBus = dataBus;
     this.extractor = extractor;
     this.url = url;
+    this.urlListDuplexStream = urlListDuplexStream;
   }
 
   run() {
-    return Promise.resolve(this.extractor.extractFromUrl(this.dataBus, this.url));
+    return this.extractor.extractFromUrl(this.urlListDuplexStream, this.dataBus, this.url);
   }
 }
 

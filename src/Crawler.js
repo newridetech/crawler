@@ -27,11 +27,16 @@ class CrawlerSession {
     this.extractorToHostSet = extractorToHostSet;
   }
 
-  onUrlListDuplexStreamData(stream, url, callback) {
+  onUrlListDuplexStreamData(urlListDuplexStream, url, callback) {
     const extractorList = this.extractorToHostSet.findExtractorListForUrl(url);
 
     for (const extractor of extractorList) {
-      this.extractorScheduler.schedule(new ExtractorSession(this.dataBus, extractor, url));
+      this.extractorScheduler.schedule(new ExtractorSession(
+        urlListDuplexStream,
+        this.dataBus,
+        extractor,
+        url
+      ));
     }
 
     return this.extractorScheduler.onceHasCapacity(callback);
@@ -42,15 +47,13 @@ class CrawlerSession {
   }
 
   run(urlListDuplexStream) {
-    const session = this;
-
     return new Promise((resolve, reject) => {
       assert.instanceOf(urlListDuplexStream, UrlListDuplexStream);
 
       urlListDuplexStream
-        .pipe(through2.obj(function streamTransformer(url, encoding, callback) {
-          session.onUrlListDuplexStreamData(this, url, callback);
-        }))
+        .pipe(through2.obj((url, encoding, callback) => (
+          this.onUrlListDuplexStreamData(urlListDuplexStream, url, callback)
+        )))
         .on('end', resolve)
         .on('error', reject)
       ;

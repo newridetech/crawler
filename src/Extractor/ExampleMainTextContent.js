@@ -12,7 +12,7 @@ const Extractor = require('../Extractor');
 const Nightmare = require('nightmare');
 
 class ExampleMainTextContent extends Extractor {
-  extractFromUrl(dataBus, url) {
+  extractFromUrl(urlListDuplexStream, dataBus, url) {
     return new Nightmare()
       .goto(url)
       .wait('#main')
