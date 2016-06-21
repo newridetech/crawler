@@ -10,18 +10,17 @@
 
 const EventEmitter = require('events');
 
-const CAPACITY_LIMIT = 1;
-
 class ExtractorScheduler extends EventEmitter {
-  constructor() {
+  constructor(props) {
     super();
 
+    this.capacityLimit = props.capacityLimit;
     this.runningExtractorSessionSet = new Set();
     this.scheduledExtractorSessionSet = new Set();
   }
 
   checkCanRunExtractor() {
-    return Promise.resolve(this.runningExtractorSessionSet.size < CAPACITY_LIMIT);
+    return Promise.resolve(this.runningExtractorSessionSet.size < this.capacityLimit);
   }
 
   flush() {

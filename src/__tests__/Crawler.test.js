@@ -34,7 +34,9 @@ test.before.cb(t => {
 
 test('should crawl given links', t => {
   const dataBus = new DataBus();
-  const extractorScheduler = new ExtractorScheduler();
+  const extractorScheduler = new ExtractorScheduler({
+    capacityLimit: 3,
+  });
   const extractorToHostSet = new ExtractorToHostSet([
     {
       hostExtractor: new ExampleMainTextContentExtractor(),
