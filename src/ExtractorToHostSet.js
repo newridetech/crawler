@@ -12,7 +12,7 @@ class ExtractorToHostSet extends Set {
   findExtractorListForUrl(url) {
     const ret = [];
 
-    for (const val of this.values()) {
+    for (const [val] of this.entries()) {
       if (val.hostPattern.test(url)) {
         ret.push(val.hostExtractor);
       }
