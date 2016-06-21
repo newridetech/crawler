@@ -8,7 +8,7 @@
 
 'use strict';
 
-const CrawlerManager = require('../CrawlerManager');
+const Crawler = require('../Crawler');
 const DataBus = require('../EventEmitter/DataBus');
 const ExampleMainTextContentExtractor = require('../Extractor/ExampleMainTextContent');
 const ExtractorScheduler = require('../EventEmitter/ExtractorScheduler');
@@ -48,7 +48,7 @@ test('should crawl given links', t => {
     `http://localhost:${server.server.address().port}/index.html?p=3`,
   ];
   const urlListDuplexStream = new UrlListDuplexStream();
-  const crawlerManager = new CrawlerManager(dataBus, extractorScheduler, extractorToHostSet);
+  const crawler = new Crawler(dataBus, extractorScheduler, extractorToHostSet);
 
   t.plan(urlList.length);
   dataBus.addListener('main', datagram => {
@@ -57,5 +57,5 @@ test('should crawl given links', t => {
   });
   urlListDuplexStream.feed(urlList);
 
-  return crawlerManager.run(urlListDuplexStream);
+  return crawler.run(urlListDuplexStream);
 });

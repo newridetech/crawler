@@ -8,7 +8,30 @@
 
 'use strict';
 
+const assert = require('chai').assert;
+const CrawlerSession = require('./CrawlerSession');
+const DataBus = require('./EventEmitter/DataBus');
+const ExtractorScheduler = require('./EventEmitter/ExtractorScheduler');
+const ExtractorToHostSet = require('./ExtractorToHostSet');
+
 class Crawler {
+  constructor(dataBus, extractorScheduler, extractorToHostSet) {
+    assert.instanceOf(dataBus, DataBus);
+    assert.instanceOf(extractorScheduler, ExtractorScheduler);
+    assert.instanceOf(extractorToHostSet, ExtractorToHostSet);
+
+    this.dataBus = dataBus;
+    this.extractorScheduler = extractorScheduler;
+    this.extractorToHostSet = extractorToHostSet;
+  }
+
+  run(urlListDuplexStream) {
+    return new CrawlerSession(
+      this.dataBus,
+      this.extractorScheduler,
+      this.extractorToHostSet
+    ).run(urlListDuplexStream);
+  }
 }
 
 module.exports = Crawler;
