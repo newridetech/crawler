@@ -31,7 +31,6 @@ class ExtractorScheduler extends EventEmitter {
 
       for (const [scheduledExtractorSession] of this.scheduledExtractorSessionSet.entries()) {
         this.scheduledExtractorSessionSet.delete(scheduledExtractorSession);
-        this.runningExtractorSessionSet.add(scheduledExtractorSession);
 
         return this.runExtractorSession(scheduledExtractorSession);
       }
@@ -74,6 +73,8 @@ class ExtractorScheduler extends EventEmitter {
   }
 
   runExtractorSession(extractorSession) {
+    this.runningExtractorSessionSet.add(extractorSession);
+
     return extractorSession.run()
       .catch(err => this.handleExtractorSessionError(extractorSession, err))
       .then(() => this.handleExtractorSessionFinish(extractorSession))
