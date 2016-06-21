@@ -14,9 +14,10 @@ const ExampleMainTextContentExtractor = require('../Extractor/ExampleMainTextCon
 const ExtractorScheduler = require('../EventEmitter/ExtractorScheduler');
 const ExtractorToHostSet = require('../ExtractorToHostSet');
 const httpServer = require('http-server');
-const UrlListDuplexStream = require('../UrlListDuplexStream');
+const os = require('os');
 const path = require('path');
 const test = require('lookly-preset-ava/test');
+const UrlListDuplexStream = require('../UrlListDuplexStream');
 
 let server;
 
@@ -35,7 +36,7 @@ test.before.cb(t => {
 test('should crawl given links', t => {
   const dataBus = new DataBus();
   const extractorScheduler = new ExtractorScheduler({
-    capacityLimit: 3,
+    capacityLimit: os.cpus().length,
   });
   const extractorToHostSet = new ExtractorToHostSet([
     {
