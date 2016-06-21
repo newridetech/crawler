@@ -64,6 +64,16 @@ class ExtractorScheduler extends EventEmitter {
     return this.flush();
   }
 
+  onceHasCapacity(callback) {
+    return this.checkCanRunExtractor().then(canRunExtractor => (
+      canRunExtractor ? (
+        callback()
+      ) : (
+        this.once(ExtractorScheduler.EVENT_CAPACITY, callback)
+      )
+    ));
+  }
+
   runExtractorSession(extractorSession) {
     return extractorSession.run()
       .catch(err => this.handleExtractorSessionError(extractorSession, err))

@@ -34,7 +34,7 @@ class CrawlerSession {
       this.extractorScheduler.schedule(new ExtractorSession(this.dataBus, extractor, url));
     }
 
-    this.extractorScheduler.once(ExtractorScheduler.EVENT_CAPACITY, callback);
+    return this.extractorScheduler.onceHasCapacity(callback);
   }
 
   onUrlListDuplexStreamEnd() {
