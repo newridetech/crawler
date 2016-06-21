@@ -31,8 +31,9 @@ test('should match given urls', t => {
     },
   ]);
   const foundExtractors = extractors.findExtractorListForUrl('bar.example.com/index.html');
+  const foundExtractorsArray = Array.from(foundExtractors);
 
-  t.true(foundExtractors.includes(extractor2));
-  t.true(foundExtractors.includes(extractor3));
-  t.is(foundExtractors.length, 2);
+  t.true(foundExtractorsArray.includes(extractor2));
+  t.true(foundExtractorsArray.includes(extractor3));
+  t.is(foundExtractorsArray.length, 2);
 });
