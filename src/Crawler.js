@@ -28,9 +28,7 @@ class CrawlerSession {
   }
 
   onUrlListDuplexStreamData(urlListDuplexStream, url, callback) {
-    const extractorList = this.extractorToHostSet.findExtractorListForUrl(url);
-
-    for (const extractor of extractorList) {
+    for (const extractor of this.extractorToHostSet.findExtractorListForUrl(url)) {
       this.extractorScheduler.schedule(new ExtractorSession(
         urlListDuplexStream,
         this.dataBus,
