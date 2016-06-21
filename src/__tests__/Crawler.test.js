@@ -36,7 +36,7 @@ test.before.cb(t => {
 test('should crawl given links', t => {
   const dataBus = new DataBus();
   const extractorScheduler = new ExtractorScheduler({
-    capacityLimit: os.cpus().length,
+    parallelLimit: os.cpus().length,
   });
   const extractorToHostSet = new ExtractorToHostSet([
     {

@@ -14,13 +14,13 @@ class ExtractorScheduler extends EventEmitter {
   constructor(props) {
     super();
 
-    this.capacityLimit = props.capacityLimit;
+    this.parallelLimit = props.parallelLimit;
     this.runningExtractorSessionSet = new Set();
     this.scheduledExtractorSessionSet = new Set();
   }
 
   checkCanRunExtractor() {
-    return Promise.resolve(this.runningExtractorSessionSet.size < this.capacityLimit);
+    return Promise.resolve(this.runningExtractorSessionSet.size < this.parallelLimit);
   }
 
   flush() {
