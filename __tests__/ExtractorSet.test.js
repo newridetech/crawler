@@ -23,7 +23,7 @@ test('should match given urls', t => {
     extractor3,
   ]);
 
-  return extractors.findExtractorListForUrl('localhost:1234/index.html')
+  return extractors.findExtractorListForUrl('localhost:1234/helloworld.html')
     .then(foundExtractors => {
       t.true(foundExtractors.includes(extractor2));
       t.true(foundExtractors.includes(extractor3));

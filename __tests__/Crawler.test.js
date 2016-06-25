@@ -42,10 +42,10 @@ test('should crawl given links', t => {
     new ExampleMainTextContentExtractor(),
   ]);
   const urlList = [
-    `http://localhost:${server.server.address().port}/index.html?p=0`,
-    `http://localhost:${server.server.address().port}/index.html?p=1`,
-    `http://localhost:${server.server.address().port}/index.html?p=2`,
-    `http://localhost:${server.server.address().port}/index.html?p=3`,
+    `http://localhost:${server.server.address().port}/helloworld.html?p=0`,
+    `http://localhost:${server.server.address().port}/helloworld.html?p=1`,
+    `http://localhost:${server.server.address().port}/helloworld.html?p=2`,
+    `http://localhost:${server.server.address().port}/helloworld.html?p=3`,
   ];
   const urlListDuplexStream = new UrlListDuplexStream();
   const crawler = new Crawler(dataBus, extractorScheduler, extractorSet);

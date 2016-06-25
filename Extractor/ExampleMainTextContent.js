@@ -13,7 +13,7 @@ const Nightmare = require('nightmare');
 
 class ExampleMainTextContent extends Extractor {
   canCrawlUrl(url) {
-    return Promise.resolve(/localhost:([0-9]+)\/index.html/.test(url));
+    return Promise.resolve(/localhost:([0-9]+)\/helloworld.html/.test(url));
   }
 
   extractFromUrl(urlListDuplexStream, dataBus, url) {
