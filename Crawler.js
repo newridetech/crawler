@@ -12,32 +12,35 @@ const assert = require('chai').assert;
 const DataBus = require('./EventEmitter/DataBus');
 const ExtractorScheduler = require('./EventEmitter/ExtractorScheduler');
 const ExtractorSession = require('./ExtractorSession');
-const ExtractorToHostSet = require('./ExtractorToHostSet');
+const ExtractorSet = require('./ExtractorSet');
 const through2 = require('through2');
 const UrlListDuplexStream = require('./UrlListDuplexStream');
 
 class CrawlerSession {
-  constructor(dataBus, extractorScheduler, extractorToHostSet) {
+  constructor(dataBus, extractorScheduler, extractorSet) {
     assert.instanceOf(dataBus, DataBus);
     assert.instanceOf(extractorScheduler, ExtractorScheduler);
-    assert.instanceOf(extractorToHostSet, ExtractorToHostSet);
+    assert.instanceOf(extractorSet, ExtractorSet);
 
     this.dataBus = dataBus;
     this.extractorScheduler = extractorScheduler;
-    this.extractorToHostSet = extractorToHostSet;
+    this.extractorSet = extractorSet;
   }
 
   onUrlListDuplexStreamData(urlListDuplexStream, url, callback) {
-    for (const extractor of this.extractorToHostSet.findExtractorListForUrl(url)) {
-      this.extractorScheduler.schedule(new ExtractorSession(
-        urlListDuplexStream,
-        this.dataBus,
-        extractor,
-        url
-      ));
-    }
-
-    return this.extractorScheduler.onceHasCapacity(callback);
+    return this.extractorSet.findExtractorListForUrl(url)
+      .then(extractorList => {
+        for (const extractor of extractorList) {
+          this.extractorScheduler.schedule(new ExtractorSession(
+            urlListDuplexStream,
+            this.dataBus,
+            extractor,
+            url
+          ));
+        }
+      })
+      .then(() => this.extractorScheduler.onceHasCapacity(callback))
+    ;
   }
 
   onUrlListDuplexStreamEnd() {

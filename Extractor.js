@@ -9,6 +9,13 @@
 'use strict';
 
 class Extractor {
+  canCrawlUrl() {
+    return Promise.resolve(false);
+  }
+
+  extractFromUrl(urlListDuplexStream, dataBus, url) {
+    return Promise.reject(new Error(`Not yet implemented: ${url}`));
+  }
 }
 
 module.exports = Extractor;

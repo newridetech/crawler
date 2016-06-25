@@ -8,32 +8,26 @@
 
 'use strict';
 
+const ExampleMainTextContentExtractor = require('../Extractor/ExampleMainTextContent');
 const Extractor = require('../Extractor');
-const ExtractorToHostSet = require('../ExtractorToHostSet');
+const ExtractorSet = require('../ExtractorSet');
 const test = require('lookly-preset-ava/test');
 
 test('should match given urls', t => {
   const extractor1 = new Extractor();
-  const extractor2 = new Extractor();
-  const extractor3 = new Extractor();
-  const extractors = new ExtractorToHostSet([
-    {
-      hostExtractor: extractor1,
-      hostPattern: /foo.example.com/,
-    },
-    {
-      hostExtractor: extractor2,
-      hostPattern: /bar.example.com/,
-    },
-    {
-      hostExtractor: extractor3,
-      hostPattern: /bar.example.com\/index.html/,
-    },
+  const extractor2 = new ExampleMainTextContentExtractor();
+  const extractor3 = new ExampleMainTextContentExtractor();
+  const extractors = new ExtractorSet([
+    extractor1,
+    extractor2,
+    extractor3,
   ]);
-  const foundExtractors = extractors.findExtractorListForUrl('bar.example.com/index.html');
-  const foundExtractorsArray = Array.from(foundExtractors);
 
-  t.true(foundExtractorsArray.includes(extractor2));
-  t.true(foundExtractorsArray.includes(extractor3));
-  t.is(foundExtractorsArray.length, 2);
+  return extractors.findExtractorListForUrl('localhost:1234/index.html')
+    .then(foundExtractors => {
+      t.true(foundExtractors.includes(extractor2));
+      t.true(foundExtractors.includes(extractor3));
+      t.is(foundExtractors.length, 2);
+    })
+  ;
 });

@@ -8,14 +8,22 @@
 
 'use strict';
 
-class ExtractorToHostSet extends Set {
-  *findExtractorListForUrl(url) {
-    for (const [val] of this.entries()) {
-      if (val.hostPattern.test(url)) {
-        yield val.hostExtractor;
-      }
-    }
+function *checkExtractorListCanCrawlUrl(self, url) {
+  for (const [extractor] of self.entries()) {
+    yield extractor.canCrawlUrl(url).then(canCrawlUrl => ({
+      canCrawlUrl,
+      extractor,
+    }));
   }
 }
 
-module.exports = ExtractorToHostSet;
+class ExtractorSet extends Set {
+  findExtractorListForUrl(url) {
+    return Promise.all(checkExtractorListCanCrawlUrl(this, url))
+      .then(extractorList => extractorList.filter(extractor => extractor.canCrawlUrl))
+      .then(extractorList => extractorList.map(extractor => extractor.extractor))
+    ;
+  }
+}
+
+module.exports = ExtractorSet;

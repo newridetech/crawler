@@ -12,7 +12,7 @@ const Crawler = require('../Crawler');
 const DataBus = require('../EventEmitter/DataBus');
 const ExampleMainTextContentExtractor = require('../Extractor/ExampleMainTextContent');
 const ExtractorScheduler = require('../EventEmitter/ExtractorScheduler');
-const ExtractorToHostSet = require('../ExtractorToHostSet');
+const ExtractorSet = require('../ExtractorSet');
 const httpServer = require('http-server');
 const os = require('os');
 const path = require('path');
@@ -38,11 +38,8 @@ test('should crawl given links', t => {
   const extractorScheduler = new ExtractorScheduler({
     parallelLimit: os.cpus().length,
   });
-  const extractorToHostSet = new ExtractorToHostSet([
-    {
-      hostExtractor: new ExampleMainTextContentExtractor(),
-      hostPattern: /localhost:([0-9]+)\/index.html/,
-    },
+  const extractorSet = new ExtractorSet([
+    new ExampleMainTextContentExtractor(),
   ]);
   const urlList = [
     `http://localhost:${server.server.address().port}/index.html?p=0`,
@@ -51,7 +48,7 @@ test('should crawl given links', t => {
     `http://localhost:${server.server.address().port}/index.html?p=3`,
   ];
   const urlListDuplexStream = new UrlListDuplexStream();
-  const crawler = new Crawler(dataBus, extractorScheduler, extractorToHostSet);
+  const crawler = new Crawler(dataBus, extractorScheduler, extractorSet);
 
   t.plan(urlList.length);
   dataBus.addListener('main', datagram => {
