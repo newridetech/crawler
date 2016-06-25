@@ -17,7 +17,7 @@ const through2 = require('through2');
 const UrlListDuplexStream = require('./UrlListDuplexStream');
 
 class CrawlerSession {
-  constructor(dataBus, extractorScheduler, extractorSet) {
+  constructor(dataBus, extractorSet, extractorScheduler = new ExtractorScheduler()) {
     assert.instanceOf(dataBus, DataBus);
     assert.instanceOf(extractorScheduler, ExtractorScheduler);
     assert.instanceOf(extractorSet, ExtractorSet);

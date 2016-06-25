@@ -14,13 +14,14 @@ const mobx = require('mobx');
 const Promise = require('bluebird');
 
 class UrlListDuplexStream extends Duplex {
-  constructor() {
+  constructor(urlList = []) {
     super({
       readableObjectMode: true,
       writableObjectMode: true,
     });
 
     this.buffer = mobx.observable([]);
+    this.feed(urlList);
   }
 
   end() {

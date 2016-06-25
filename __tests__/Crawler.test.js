@@ -11,10 +11,8 @@
 const Crawler = require('../Crawler');
 const DataBus = require('../EventEmitter/DataBus');
 const ExampleMainTextContentExtractor = require('../Extractor/ExampleMainTextContent');
-const ExtractorScheduler = require('../EventEmitter/ExtractorScheduler');
 const ExtractorSet = require('../ExtractorSet');
 const httpServer = require('http-server');
-const os = require('os');
 const path = require('path');
 const test = require('lookly-preset-ava/test');
 const UrlListDuplexStream = require('../UrlListDuplexStream');
@@ -35,9 +33,6 @@ test.before.cb(t => {
 
 test('should crawl given links', t => {
   const dataBus = new DataBus();
-  const extractorScheduler = new ExtractorScheduler({
-    parallelLimit: os.cpus().length,
-  });
   const extractorSet = new ExtractorSet([
     new ExampleMainTextContentExtractor(),
   ]);
@@ -47,15 +42,14 @@ test('should crawl given links', t => {
     `http://localhost:${server.server.address().port}/helloworld.html?p=2`,
     `http://localhost:${server.server.address().port}/helloworld.html?p=3`,
   ];
-  const urlListDuplexStream = new UrlListDuplexStream();
-  const crawler = new Crawler(dataBus, extractorScheduler, extractorSet);
+  const urlListDuplexStream = new UrlListDuplexStream(urlList);
+  const crawler = new Crawler(dataBus, extractorSet);
 
   t.plan(urlList.length);
   dataBus.addListener('main', datagram => {
     t.is(datagram.data, 'Hello!');
     datagram.resolve();
   });
-  urlListDuplexStream.feed(urlList);
 
   return crawler.run(urlListDuplexStream);
 });

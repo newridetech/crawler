@@ -9,9 +9,10 @@
 'use strict';
 
 const EventEmitter = require('events');
+const os = require('os');
 
 class ExtractorScheduler extends EventEmitter {
-  constructor(props) {
+  constructor(props = { parallelLimit: os.cpus().length }) {
     super();
 
     this.parallelLimit = props.parallelLimit;
