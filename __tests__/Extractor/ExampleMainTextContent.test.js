@@ -25,7 +25,7 @@ test.after.cb(t => {
 
 test.before.cb(t => {
   server = httpServer.createServer({
-    root: path.resolve(__dirname, '..', '__fixtures__'),
+    root: path.resolve(__dirname, '..', '..', '__fixtures__'),
   });
 
   server.listen(t.end);
