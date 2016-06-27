@@ -39,12 +39,13 @@ class CrawlerSession {
           ));
         }
       })
-      .then(() => this.extractorScheduler.onceHasCapacity(callback))
+      .then(() => this.extractorScheduler.awaitCanRunExtractor())
+      .then(callback)
     ;
   }
 
   onUrlListDuplexStreamEnd() {
-    this.extractorScheduler.flush();
+    return this.extractorScheduler.flush();
   }
 
   run(urlListDuplexStream) {
@@ -55,7 +56,7 @@ class CrawlerSession {
         .pipe(through2.obj((url, encoding, callback) => (
           this.onUrlListDuplexStreamData(urlListDuplexStream, url, callback)
         )))
-        .on('end', resolve)
+        .on('end', () => this.onUrlListDuplexStreamEnd().then(resolve))
         .on('error', reject)
       ;
       this.extractorScheduler.once(ExtractorScheduler.EVENT_DEPLETED, resolve);

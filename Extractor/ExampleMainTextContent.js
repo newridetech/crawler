@@ -19,6 +19,7 @@ class ExampleMainTextContent extends Extractor {
   extractFromUrl(urlListDuplexStream, dataBus, url) {
     return new Nightmare()
       .goto(url)
+      .then()
       .wait('#main')
       .evaluate(() => document.querySelector('#main').textContent)
       .end()

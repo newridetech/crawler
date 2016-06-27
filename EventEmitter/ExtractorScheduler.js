@@ -20,6 +20,16 @@ class ExtractorScheduler extends EventEmitter {
     this.scheduledExtractorSessionSet = new Set();
   }
 
+  awaitCanRunExtractor() {
+    return this.checkCanRunExtractor().then(canRunExtractor => {
+      if (canRunExtractor) {
+        return Promise.resolve();
+      }
+
+      return new Promise(resolve => this.once(ExtractorScheduler.EVENT_CAPACITY, resolve));
+    });
+  }
+
   checkCanRunExtractor() {
     return Promise.resolve(this.runningExtractorSessionSet.size < this.parallelLimit);
   }
@@ -61,16 +71,6 @@ class ExtractorScheduler extends EventEmitter {
     this.runningExtractorSessionSet.delete(extractorSession);
 
     return this.flush();
-  }
-
-  onceHasCapacity(callback) {
-    return this.checkCanRunExtractor().then(canRunExtractor => (
-      canRunExtractor ? (
-        callback()
-      ) : (
-        this.once(ExtractorScheduler.EVENT_CAPACITY, callback)
-      )
-    ));
   }
 
   runExtractorSession(extractorSession) {
