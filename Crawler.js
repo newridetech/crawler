@@ -16,7 +16,7 @@ const ExtractorSet = require('./ExtractorSet');
 const through2 = require('through2');
 const UrlListDuplexStream = require('./UrlListDuplexStream');
 
-class CrawlerSession {
+class Crawler {
   constructor(dataBus, extractorSet, extractorScheduler = new ExtractorScheduler()) {
     assert.instanceOf(dataBus, DataBus);
     assert.instanceOf(extractorScheduler, ExtractorScheduler);
@@ -64,4 +64,4 @@ class CrawlerSession {
   }
 }
 
-module.exports = CrawlerSession;
+module.exports = Crawler;
