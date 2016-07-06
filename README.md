@@ -72,6 +72,37 @@ class ExampleExtractor extends Extractor {
 }
 ```
 
+Pobieranie kilku wartości z HTML:
+
+```JavaScript
+const $ = require('cheerio');
+const Extractor = require('crawler.absolvent.pl/Extractor');
+const fetch = require('node-fetch');
+
+class ExampleExtractor extends Extractor {
+  constructor() {
+    this.data = {};
+  }
+
+  canCrawlUrl(url) {
+    return Promise.resolve(/example.com/.test(url));
+  }
+
+  extractFromUrl(urlListDuplexStream, dataBus, url) {
+    return fetch(url)
+      .then(response => response.text())
+      .then(response => $(response))
+      .then($response => {
+        this.data.title = $response.find('h1').text();
+        this.data.content = $response.find('p').text();
+
+        dataBus.push('pageData', this.data);
+      })
+    ;
+  }
+}
+```
+
 #### Nightmare
 
 Nightmare należy używać TYLKO jeżeli wariant z `fetch` nie działa (np strona
