@@ -19,18 +19,6 @@ const UrlListDuplexStream = require('../../UrlListDuplexStream');
 
 let server;
 
-test.after.cb(t => {
-  server.server.close(t.end);
-});
-
-test.before.cb(t => {
-  server = httpServer.createServer({
-    root: path.resolve(__dirname, '..', '..', '__fixtures__'),
-  });
-
-  server.listen(t.end);
-});
-
 test('should crawl given links', t => {
   const dataBus = new DataBus();
   const extractorSet = new ExtractorSet([
@@ -54,4 +42,16 @@ test('should crawl given links', t => {
   urlListDuplexStream.feed(urlList);
 
   return crawler.run(urlListDuplexStream);
+});
+
+test.after.cb(t => {
+  server.server.close(t.end);
+});
+
+test.before.cb(t => {
+  server = httpServer.createServer({
+    root: path.resolve(__dirname, '..', '..', '__fixtures__'),
+  });
+
+  server.listen(t.end);
 });

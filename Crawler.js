@@ -13,17 +13,24 @@ const DataBus = require('./EventEmitter/DataBus');
 const ExtractorScheduler = require('./EventEmitter/ExtractorScheduler');
 const ExtractorSession = require('./ExtractorSession');
 const ExtractorSet = require('./ExtractorSet');
+const isNull = require('lodash/isNull');
+const Logger = require('./Logger');
 const through2 = require('through2');
 const UrlListDuplexStream = require('./UrlListDuplexStream');
 
 class Crawler {
-  constructor(dataBus, extractorSet, extractorScheduler = new ExtractorScheduler()) {
+  constructor(dataBus, extractorSet, logger = new Logger(), extractorScheduler = null) {
+    if (isNull(extractorScheduler)) {
+      this.extractorScheduler = new ExtractorScheduler(void 0, logger);
+    } else {
+      assert.instanceOf(extractorScheduler, ExtractorScheduler);
+      this.extractorScheduler = extractorScheduler;
+    }
+
     assert.instanceOf(dataBus, DataBus);
-    assert.instanceOf(extractorScheduler, ExtractorScheduler);
     assert.instanceOf(extractorSet, ExtractorSet);
 
     this.dataBus = dataBus;
-    this.extractorScheduler = extractorScheduler;
     this.extractorSet = extractorSet;
   }
 

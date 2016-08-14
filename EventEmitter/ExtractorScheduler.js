@@ -12,9 +12,10 @@ const EventEmitter = require('events');
 const os = require('os');
 
 class ExtractorScheduler extends EventEmitter {
-  constructor(props = { parallelLimit: os.cpus().length }) {
+  constructor(props = { parallelLimit: os.cpus().length }, logger = null) {
     super();
 
+    this.logger = logger;
     this.parallelLimit = props.parallelLimit;
     this.runningExtractorSessionSet = new Set();
     this.scheduledExtractorSessionSet = new Set();
@@ -59,11 +60,11 @@ class ExtractorScheduler extends EventEmitter {
   }
 
   handleExtractorSessionError(extractorSession, err) {
-    return this.extractorScheduler
-      .handleExtractorSessionFinish(extractorSession)
-      .then(() => {
-        throw err;
-      })
+    return this.logger
+      .error(err)
+      .then(() => (
+        this.extractorScheduler.handleExtractorSessionFinish(extractorSession)
+      ))
     ;
   }
 
