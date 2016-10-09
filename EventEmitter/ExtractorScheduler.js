@@ -62,9 +62,7 @@ class ExtractorScheduler extends EventEmitter {
   handleExtractorSessionError(extractorSession, err) {
     return this.logger
       .error(err)
-      .then(() => (
-        this.extractorScheduler.handleExtractorSessionFinish(extractorSession)
-      ))
+      .then(() => this.handleExtractorSessionFinish(extractorSession))
     ;
   }
 
