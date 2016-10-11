@@ -9,6 +9,7 @@
 'use strict';
 
 const BundleLoader = require('./BundleLoader');
+const filter = require('lodash/filter');
 
 function reduceExtracotrList(acc, bundle) {
   return acc.concat(bundle.extractorList);
@@ -31,7 +32,7 @@ class BundleListLoader {
     return Promise.all(promiseList).then(bundleList => ({
       bundleList,
       extractorList: bundleList.reduce(reduceExtracotrList, []),
-      jobListEntryUrlList: bundleList.reduce(reduceJobListEntryUrlList, []),
+      jobListEntryUrlList: filter(bundleList.reduce(reduceJobListEntryUrlList, [])),
     }));
   }
 }
