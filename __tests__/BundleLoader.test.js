@@ -25,6 +25,7 @@ test('loads example bundle', t => {
       ]);
       t.is(bundle.jobExpiredExtractor, null);
       t.is(bundle.jobExtractor, ExampleJobExtractor);
+      t.is(bundle.jobListEntryUrl, 'http://example.com');
       t.is(bundle.jobListExtractor, ExampleJobListExtractor);
       t.is(bundle.name, 'example.com');
     })

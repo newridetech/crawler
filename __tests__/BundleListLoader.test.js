@@ -29,6 +29,9 @@ test('loads example bundle', t => {
         ExampleJobExtractor,
         ExampleJobListExtractor,
       ]);
+      t.deepEqual(bundleList.jobListEntryUrlList, [
+        'http://example.com',
+      ]);
     })
   ;
 });

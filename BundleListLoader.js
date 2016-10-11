@@ -10,6 +10,14 @@
 
 const BundleLoader = require('./BundleLoader');
 
+function reduceExtracotrList(acc, bundle) {
+  return acc.concat(bundle.extractorList);
+}
+
+function reduceJobListEntryUrlList(acc, bundle) {
+  return acc.concat(bundle.jobListEntryUrl);
+}
+
 class BundleListLoader {
   constructor(directoryNameList) {
     this.directoryNameList = directoryNameList;
@@ -22,7 +30,8 @@ class BundleListLoader {
 
     return Promise.all(promiseList).then(bundleList => ({
       bundleList,
-      extractorList: bundleList.reduce((acc, bundle) => acc.concat(bundle.extractorList), []),
+      extractorList: bundleList.reduce(reduceExtracotrList, []),
+      jobListEntryUrlList: bundleList.reduce(reduceJobListEntryUrlList, []),
     }));
   }
 }

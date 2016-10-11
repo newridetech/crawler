@@ -52,6 +52,7 @@ class BundleLoader {
       ]),
       jobExpiredExtractor: results[0],
       jobExtractor: results[1],
+      jobListEntryUrl: results[2].jobListEntryUrl,
       jobListExtractor: results[2],
       name: results[3],
     }));
