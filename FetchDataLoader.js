@@ -11,9 +11,11 @@
 const request = require('request');
 
 class FetchDataLoader {
-  fetch(url) {
+  fetch(url, options = {}) {
     return new Promise((resolve, reject) => {
-      request(url, (err, response, body) => {
+      request(Object.assign({
+        url,
+      }, options), (err, response, body) => {
         if (err) {
           reject(err);
         } else {
