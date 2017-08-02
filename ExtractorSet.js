@@ -9,7 +9,7 @@
 'use strict';
 
 function *checkExtractorListCanCrawlUrl(self, url) {
-  for (const [extractor] of self.entries()) {
+  for (const [extractor] of self.extractorSet.entries()) {
     yield extractor.canCrawlUrl(url).then(canCrawlUrl => ({
       canCrawlUrl,
       extractor,
@@ -17,7 +17,11 @@ function *checkExtractorListCanCrawlUrl(self, url) {
   }
 }
 
-class ExtractorSet extends Set {
+class ExtractorSet {
+  constructor(extractors) {
+    this.extractorSet = new Set(extractors);
+  }
+
   findExtractorListForUrl(url) {
     return Promise.all(checkExtractorListCanCrawlUrl(this, url))
       .then(extractorList => extractorList.filter(extractor => extractor.canCrawlUrl))

@@ -11,10 +11,11 @@
 const BundleLoader = require('../BundleLoader');
 const ExampleJobExtractor = require('../__fixtures__/bundles/example.com/Job');
 const ExampleJobListExtractor = require('../__fixtures__/bundles/example.com/JobList');
+const path = require('path');
 const test = require('lookly-preset-ava/test');
 
 test('loads example bundle', t => {
-  const bundleLoader = new BundleLoader('../__fixtures__/bundles/example.com');
+  const bundleLoader = new BundleLoader(path.join(__dirname, '../__fixtures__/bundles/example.com'));
 
   return bundleLoader
     .loadBundle()
