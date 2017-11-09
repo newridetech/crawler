@@ -35,7 +35,7 @@ module.exports = MyExtractor;
 ### setup crawler engine
 
 To work, crawler needs `UrlListDuplexStream`, `DataBus` and `ExtractorSet`.
-Those are basic and necessary object for the mechanism to work and each one
+Those are basic and necessary objects for the mechanism to work and each one
 of them plays its own role in the crawling process.
 
 #### why not just one Crawler object?
