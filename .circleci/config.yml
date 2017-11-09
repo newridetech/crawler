@@ -15,4 +15,4 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-      - run: ./nodoe_modules/bin/gulp test
+      - run: ./node_modules/bin/gulp test
