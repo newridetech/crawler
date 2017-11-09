@@ -3,7 +3,7 @@
 ## How to start crawling?
 
 To start crawling and extract data from sites you need to create a data
-extractor that is capable of handling given website and plug it into the
+extractor that is capable of handling given resource and plug it into the
 crawler engine. Then you can read incoming data from `dataBus`.
 
 ### code your data extractor
@@ -71,6 +71,7 @@ it's empty. You can push more links into `UrlListDuplexStream` while crawling.
 Thanks to that you can crawl resources list using one extractor and then push
 the links to individual resources into `UrlListDuplexStream` so other
 `Extractors` can crawl them.
+Crawling stops when `UrlListDuplexStream` is empty.
 
 #### how to implement this?
 
